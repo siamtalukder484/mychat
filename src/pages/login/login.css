@@ -5,6 +5,9 @@
     align-items: center;
     justify-content: center;
 }
+.loginbox__inner{
+    width: 378px;
+}
 .loginimg{
     width: 100%;
     height: 100vh;
@@ -39,6 +42,47 @@
 .loginbox .form_main{
     margin-top: 30px;
 }
-.form_main input{
-    /* width: 400px; */
+.form_main{
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+.login_input_field{
+    width: 100%;
+}
+.loginbtn{
+    background-color: #5F34F5 !important;
+    color: white;
+    padding: 15px 0 !important;
+    font-size: 20px;
+    font-family: 'Open Sans', sans-serif;
+    border-radius: 8px !important;
+}
+.loginauth{
+    font-size: 14px;
+    font-family: 'Open Sans', sans-serif;
+    color: #03014C;
+    padding-top: 20px;
+    text-align: center;
+}
+.loginauth a, .loginauth span{
+    color: #EA6C00;
+    font-weight: 700;
+    text-transform: capitalize;
+    padding-left: 8px;
+    text-decoration: none;
+    cursor: pointer;
+}
+.loginimg img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.forgot_box{
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+.forgot_box h2{
+    margin-bottom: 0px;
 }

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import TextField from '@mui/material/TextField';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -8,96 +8,91 @@ import "./login.css"
 import SectionHeading from '../../components/SectionHeading';
 import GoogleSvg from '../../../public/google.svg';
 import Button from '@mui/material/Button';
+import Input from '../../components/Input';
+import CustomButton from '../../components/CustomButton';
+import AuthNavigate from '../../components/AuthNavigate';
+import LoginImg from '../../assets/images/hero.jpg'
+import Image from '../../utilities/Image';
+import { Modal, Typography } from '@mui/material';
 
-const ValidationTextField = styled(TextField)({
-  '& input:valid + fieldset': {
-    borderColor: '#E0E3E7',
-    borderWidth: 1,
-  },
-  '& input:invalid + fieldset': {
-    borderColor: 'red',
-    borderWidth: 5,
-  },
-  '& input:valid:focus + fieldset': {
-    borderLeftWidth: 4,
-    padding: '4px !important', // override inline-style
-  },
-});
-
-const CustomButton = styled(Button)({
-  boxShadow: 'none',
-  textTransform: 'none',
-  fontSize: 50,
-  padding: '20px 12px',
-  border: '1px solid',
-  lineHeight: 1.5,
-  backgroundColor: 'red',
-  borderColor: '#0063cc',
-  fontFamily: [
-    '-apple-system',
-    'BlinkMacSystemFont',
-    '"Segoe UI"',
-    'Roboto',
-    '"Helvetica Neue"',
-    'Arial',
-    'sans-serif',
-    '"Apple Color Emoji"',
-    '"Segoe UI Emoji"',
-    '"Segoe UI Symbol"',
-  ].join(','),
-  '&:hover': {
-    backgroundColor: 'yellow',
-    borderColor: '#0062cc',
-    boxShadow: 'none',
-  },
-  '&:active': {
-    boxShadow: 'none',
-    backgroundColor: '#0062cc',
-    borderColor: '#005cbf',
-  },
-  '&:focus': {
-    boxShadow: '0 0 0 0.2rem rgba(0,123,255,.5)',
-  },
-});
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
 
 const Login = () => {
+  let [passShow, setPassShow] = useState(false)
+
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  let handleModalClose =() => {
+    setOpen(false)
+  }
+
   return (
     <>
+    <Modal
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={style}>
+            <button onClick={handleModalClose}>Close</button>
+            <div className='forgot_box'>
+              <h2>Forgot Password</h2>
+              <Input type="email" labeltext="Email Address" variant="standard"/>
+              <CustomButton text="Send Link" variant="contained"/>
+            </div>
+          </Box>
+        </Modal>
          <Box>
             <Grid container spacing={0}>
               <Grid item xs={6}>
                 <div className='loginbox'>
-                  <div>
-                  <CustomButton variant="contained">
-                    Bootstrap
-                  </CustomButton>
-                    <Button color="error" variant="contained">amader button</Button>
+                  <div className='loginbox__inner'>
                     <SectionHeading style="auth_heading" text="Login to your account!"/>
                     <div className='provider_login'>
                         <img src={GoogleSvg}/>
                         <span>Login with Google</span>
                     </div>
                     <div className='form_main'>
-                      <TextField fullWidth id="outlined-basic" label="Email Address" variant="standard" />
-                      <ValidationTextField
-                        label="CSS validation style"
-                        required
-                        variant="outlined"
-                        defaultValue="Success"
-                        id="validation-outlined-input"
-                      />
+                      <div>
+                        <Input name="email" type="email" variant="standard" labeltext="Email Address" style="login_input_field"/>
+                      </div>
+                      <div>
+                        <Input name="password" type={passShow ? "text" : "password"} variant="standard" labeltext="Password" style="login_input_field"/>
+                        <button onClick={()=>setPassShow(!passShow)}>Show</button>
+                      </div>
+                      <CustomButton styleing="loginbtn" variant='contained' text="login to continue"/>
                     </div>
+                    <AuthNavigate style="loginauth" link="/registration" linktext="sing up" text="Don't have an account?"/>
+                    {/* <AuthNavigate style="loginauth" linktext="Forget Password" text="Password vulea gaco?"/> */}
+                    <p className='loginauth'>
+                      Password vulea gaco?
+                      <span onClick={handleOpen}>Forget Password</span>
+                    </p>
                   </div>
                 </div>
               </Grid>
               <Grid item xs={6}>
                 <div className='loginimg'>
-
+                    <Image source={LoginImg} alt="img"/>
                 </div>
               </Grid>
              
             </Grid>
         </Box>
+        
     </>
   )
 }
