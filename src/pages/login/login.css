@@ -86,3 +86,9 @@
 .forgot_box h2{
     margin-bottom: 0px;
 }
+.error{
+    background-color: red;
+    color: white;
+    padding: 8px 15px;
+    margin-top: 8px;
+}

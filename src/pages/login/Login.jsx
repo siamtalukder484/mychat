@@ -28,6 +28,7 @@ const style = {
 };
 
 const Login = () => {
+  let emailregex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   let [passShow, setPassShow] = useState(false)
 
   const [open, setOpen] = React.useState(false);
@@ -37,7 +38,21 @@ const Login = () => {
   let handleModalClose =() => {
     setOpen(false)
   }
+  let [formData, setFormData] = useState("")
+  let [error, setError] = useState("")
+  let handleForgot = (e) => {
+    setFormData(e.target.value)
+  }
 
+  let handleForgotSubmit =() => {
+    if(!formData){
+      console.log("email dao"); 
+    }else if(!formData.match(emailregex)){
+      console.log("email format thik dao");
+    }else{
+      console.log(formData);
+    }
+  }
   return (
     <>
     <Modal
@@ -50,8 +65,8 @@ const Login = () => {
             <button onClick={handleModalClose}>Close</button>
             <div className='forgot_box'>
               <h2>Forgot Password</h2>
-              <Input type="email" labeltext="Email Address" variant="standard"/>
-              <CustomButton text="Send Link" variant="contained"/>
+              <Input onChange={handleForgot} type="email" labeltext="Email Address" variant="standard"/>
+              <CustomButton onClick={handleForgotSubmit} text="Send Link" variant="contained"/>
             </div>
           </Box>
         </Modal>
