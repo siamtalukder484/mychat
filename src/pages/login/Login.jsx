@@ -13,7 +13,7 @@ import CustomButton from '../../components/CustomButton';
 import AuthNavigate from '../../components/AuthNavigate';
 import LoginImg from '../../assets/images/hero.jpg'
 import Image from '../../utilities/Image';
-import { Modal, Typography } from '@mui/material';
+import { Alert, Modal, Typography } from '@mui/material';
 
 const style = {
   position: 'absolute',
@@ -38,24 +38,70 @@ const Login = () => {
   let handleModalClose =() => {
     setOpen(false)
   }
-  let [formData, setFormData] = useState("")
-  let [error, setError] = useState("")
-  let handleForgot = (e) => {
-    setFormData(e.target.value)
+  let [formData, setFormData] = useState({
+    email: "",
+    password: ""
+  })
+  let [error, setError] = useState({
+    email: "",
+    password: ""
+  })
+  let [forgetformData, setforgetFormData] = useState({
+    email: "",
+  })
+  let [forgeterror, setforgetError] = useState({
+    email: "",
+  })
+
+
+  let handleLoginForm = (e) =>{
+    let {name, value} = e.target
+    setFormData({
+      ...formData,[name]:value
+    })
   }
 
-  let handleForgotSubmit =() => {
-    if(!formData){
-      console.log("email dao"); 
-    }else if(!formData.match(emailregex)){
-      console.log("email format thik dao");
+
+  let handleLoginSubmit = () => {
+    if(!formData.email){
+      setError({email: "email ny"});
+    }
+    else if(!formData.email.match(emailregex)){
+      setError({email: "email format thik ny"});
+    }else if(!formData.password){
+      setError({email: ""});
+      setError({password: "pass ny"});
     }else{
+      setError({
+        email: "",
+        password: ""
+      })
       console.log(formData);
     }
   }
+
+  let handleForgotData = (e) => {
+    let {name, value} = e.target
+    setforgetFormData({
+      ...forgetformData,[name]:value
+    })
+  }
+
+  let handleForgotSubmit = () => {
+    if(!forgetformData.email){
+      setforgetError({email: "forget email ny"});
+    }else if(!forgetformData.email.match(emailregex)){
+      setforgetError({email: "email format thik ny"});
+    }else{
+      setforgetError({email: ""})
+      console.log(formData);
+    }
+  }
+
+
   return (
     <>
-    <Modal
+        <Modal
           open={open}
           onClose={handleClose}
           aria-labelledby="modal-modal-title"
@@ -65,7 +111,12 @@ const Login = () => {
             <button onClick={handleModalClose}>Close</button>
             <div className='forgot_box'>
               <h2>Forgot Password</h2>
-              <Input onChange={handleForgot} type="email" labeltext="Email Address" variant="standard"/>
+              <div>
+                <Input name="forgot" onChange={handleForgotData} type="email" labeltext="Email Address" variant="standard"/>
+                  {forgeterror.email &&
+                      <Alert severity="error">{forgeterror.email}</Alert>
+                    }
+              </div>
               <CustomButton onClick={handleForgotSubmit} text="Send Link" variant="contained"/>
             </div>
           </Box>
@@ -82,13 +133,19 @@ const Login = () => {
                     </div>
                     <div className='form_main'>
                       <div>
-                        <Input name="email" type="email" variant="standard" labeltext="Email Address" style="login_input_field"/>
+                        <Input onChange={handleLoginForm} name="email" type="email" variant="standard" labeltext="Email Address" style="login_input_field"/>
+                        {error.email &&
+                          <Alert severity="error">{error.email}</Alert>
+                        }
                       </div>
                       <div>
-                        <Input name="password" type={passShow ? "text" : "password"} variant="standard" labeltext="Password" style="login_input_field"/>
+                        <Input onChange={handleLoginForm} name="password" type={passShow ? "text" : "password"} variant="standard" labeltext="Password" style="login_input_field"/>
                         <button onClick={()=>setPassShow(!passShow)}>Show</button>
+                        {error.password &&
+                          <Alert severity="error">{error.password}</Alert>
+                        }
                       </div>
-                      <CustomButton styleing="loginbtn" variant='contained' text="login to continue"/>
+                      <CustomButton onClick={handleLoginSubmit} styleing="loginbtn" variant='contained' text="login to continue"/>
                     </div>
                     <AuthNavigate style="loginauth" link="/registration" linktext="sing up" text="Don't have an account?"/>
                     {/* <AuthNavigate style="loginauth" linktext="Forget Password" text="Password vulea gaco?"/> */}
