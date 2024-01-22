@@ -46,13 +46,6 @@ const Login = () => {
     email: "",
     password: ""
   })
-  let [forgetformData, setforgetFormData] = useState({
-    email: "",
-  })
-  let [forgeterror, setforgetError] = useState({
-    email: "",
-  })
-
 
   let handleLoginForm = (e) =>{
     let {name, value} = e.target
@@ -80,21 +73,30 @@ const Login = () => {
     }
   }
 
-  let handleForgotData = (e) => {
+  let [forgetformData, setforgetFormData] = useState({
+    forgetemail: "",
+  })
+  let [forgeterror, setforgetError] = useState({
+    forgetemail: "",
+  })
+
+  let handleForgetData = (e) => {
     let {name, value} = e.target
     setforgetFormData({
       ...forgetformData,[name]:value
     })
   }
 
-  let handleForgotSubmit = () => {
-    if(!forgetformData.email){
-      setforgetError({email: "forget email ny"});
-    }else if(!forgetformData.email.match(emailregex)){
-      setforgetError({email: "email format thik ny"});
+  let handleForgetSubmit = () => {
+    console.log(forgetformData);
+    if(!forgetformData.forgetemail){
+      setforgetError({forgetemail: "forget email ny"});
+    }
+    else if(!forgetformData.forgetemail.match(emailregex)){
+      setforgetError({forgetemail: "email format thik ny"});
     }else{
-      setforgetError({email: ""})
-      console.log(formData);
+      setforgetError({forgetemail: ""})
+      console.log(forgetformData);
     }
   }
 
@@ -112,12 +114,12 @@ const Login = () => {
             <div className='forgot_box'>
               <h2>Forgot Password</h2>
               <div>
-                <Input name="forgot" onChange={handleForgotData} type="email" labeltext="Email Address" variant="standard"/>
-                  {forgeterror.email &&
-                      <Alert severity="error">{forgeterror.email}</Alert>
+                <Input onChange={handleForgetData} name="forgetemail" type="email" labeltext="Email Address" variant="standard"/>
+                  {forgeterror.forgetemail &&
+                      <Alert severity="error">{forgeterror.forgetemail}</Alert>
                     }
               </div>
-              <CustomButton onClick={handleForgotSubmit} text="Send Link" variant="contained"/>
+              <CustomButton onClick={handleForgetSubmit} text="Send Link" variant="contained"/>
             </div>
           </Box>
         </Modal>
