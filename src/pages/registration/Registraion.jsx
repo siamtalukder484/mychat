@@ -1,12 +1,19 @@
 import { Box, Grid } from '@mui/material'
+import Alert from '@mui/material/Alert'
+import { createUserWithEmailAndPassword, getAuth,sendEmailVerification } from "firebase/auth"
 import React, { useState } from 'react'
-import SectionHeading from '../../components/SectionHeading'
-import Input from '../../components/Input'
-import CustomButton from '../../components/CustomButton'
+import { Audio, ColorRing } from 'react-loader-spinner'
+import { useNavigate } from "react-router-dom"
 import AuthNavigate from '../../components/AuthNavigate'
-import Alert from '@mui/material/Alert';
+import CustomButton from '../../components/CustomButton'
+import Input from '../../components/Input'
+import SectionHeading from '../../components/SectionHeading'
 
 const Registraion = () => {
+  const auth = getAuth();
+  const navigate = useNavigate();
+  const [loader, setLoader] = useState(false)
+
   let [error, setError] = useState({
     email: "",
     fullname: "",
@@ -42,12 +49,38 @@ const Registraion = () => {
       setError({fullname: ""});
       setError({password: "pass ny"});
     }else{
+      setLoader(true)
       setError({
         email: "",
         fullname: "",
         password: ""
       })
-      console.log(signupData);
+
+      createUserWithEmailAndPassword(auth, signupData.email, signupData.password).then((userCredential)=>{
+        let myemail = userCredential.user.email
+        sendEmailVerification(auth.myemail).then(()=>{
+          console.log("email send hoice");
+        })
+        // console.log(userCredential);
+        navigate("/")
+      }).catch((error)=>{
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        if(errorCode == "auth/email-already-in-use"){
+          setError({email: "email already existed"});
+        }else{
+          setError({email: ""});
+        }
+      })
+      setSignupData({
+        email: "",
+        fullname: "",
+        password: ""
+      })
+      setTimeout(()=>{
+        setLoader(false)
+      },2000)
+      // console.log(signupData);
     }
   }
 
@@ -60,24 +93,49 @@ const Registraion = () => {
                 <SectionHeading style="auth_heading" text="Get started with easily register"/>
                 <div className='form_main'>
                   <div>
-                    <Input onChange={handleForm} name="email" type="email" variant="outlined" labeltext="Email Address" style="login_input_field"/>
+                    <Input onChange={handleForm} name="email" value={signupData.email} type="email" variant="outlined" labeltext="Email Address" style="login_input_field"/>
                     {error.email &&
                       <Alert severity="error">{error.email}</Alert>
                     }
                   </div>
                   <div>
-                    <Input onChange={handleForm} name="fullname" type="text" variant="outlined" labeltext="Full Name" style="login_input_field"/>
+                    <Input onChange={handleForm} name="fullname" value={signupData.fullname} type="text" variant="outlined" labeltext="Full Name" style="login_input_field"/>
                     {error.fullname &&
                       <Alert severity="error">{error.fullname}</Alert>
                     }
                   </div>
                   <div>
-                    <Input onChange={handleForm} name="password" type="password" variant="outlined" labeltext="Password" style="login_input_field"/>
+                    <Input onChange={handleForm} name="password" value={signupData.password} type="password" variant="outlined" labeltext="Password" style="login_input_field"/>
                     {error.password &&
                       <Alert severity="error">{error.password}</Alert>
                     }
                   </div>
-                  <CustomButton onClick={handleSubmit} styleing="loginbtn" variant='contained' text="sing up"/>
+                  {loader ?
+                    <>
+                     <Audio
+                     height="80"
+                     width="80"
+                     radius="9"
+                     color="green"
+                     ariaLabel="loading"
+                     wrapperStyle
+                     wrapperClass
+                   />
+                     <ColorRing
+                     visible={true}
+                     height="80"
+                     width="80"
+                     ariaLabel="color-ring-loading"
+                     wrapperStyle={{}}
+                     wrapperClass="color-ring-wrapper"
+                     colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
+                   />
+                    </>
+                   :
+                   <CustomButton onClick={handleSubmit} styleing="loginbtn" variant='contained' text="sing up"/>
+
+                  }
+                 
                 </div>
                 <AuthNavigate style="loginauth" link="/" linktext="sing in" text="Already have an account?"/>
               </div>

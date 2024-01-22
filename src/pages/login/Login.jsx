@@ -1,19 +1,16 @@
-import React, { useState } from 'react'
-import TextField from '@mui/material/TextField';
-import { styled } from '@mui/material/styles';
+import { Alert, Modal } from '@mui/material';
 import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
-import "./login.css"
-import SectionHeading from '../../components/SectionHeading';
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import React, { useState } from 'react';
 import GoogleSvg from '../../../public/google.svg';
-import Button from '@mui/material/Button';
-import Input from '../../components/Input';
-import CustomButton from '../../components/CustomButton';
+import LoginImg from '../../assets/images/hero.jpg';
 import AuthNavigate from '../../components/AuthNavigate';
-import LoginImg from '../../assets/images/hero.jpg'
+import CustomButton from '../../components/CustomButton';
+import Input from '../../components/Input';
+import SectionHeading from '../../components/SectionHeading';
 import Image from '../../utilities/Image';
-import { Alert, Modal, Typography } from '@mui/material';
+import "./login.css";
 
 const style = {
   position: 'absolute',
@@ -28,6 +25,9 @@ const style = {
 };
 
 const Login = () => {
+
+  const auth = getAuth();
+
   let emailregex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   let [passShow, setPassShow] = useState(false)
 
@@ -65,11 +65,23 @@ const Login = () => {
       setError({email: ""});
       setError({password: "pass ny"});
     }else{
+      signInWithEmailAndPassword(auth, formData.email, formData.password).then((userCredential)=>{
+          console.log(userCredential);
+      }).catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        if(errorCode == "auth/invalid-credential"){
+          setError({email: "email or password error"});
+        }else{
+          setError({email: ""});
+        }
+        console.log(errorCode);
+        console.log(errorMessage);
+      })
       setError({
         email: "",
         password: ""
       })
-      console.log(formData);
     }
   }
 
