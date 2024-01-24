@@ -1,7 +1,7 @@
 import { Alert, Modal } from '@mui/material';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, signOut  } from "firebase/auth";
 import React, { useState } from 'react';
 import GoogleSvg from '../../../public/google.svg';
 import LoginImg from '../../assets/images/hero.jpg';
@@ -11,6 +11,8 @@ import Input from '../../components/Input';
 import SectionHeading from '../../components/SectionHeading';
 import Image from '../../utilities/Image';
 import "./login.css";
+import { useNavigate } from "react-router-dom"
+import { ToastContainer, toast } from 'react-toastify';
 
 const style = {
   position: 'absolute',
@@ -25,7 +27,7 @@ const style = {
 };
 
 const Login = () => {
-
+  const navigate = useNavigate();
   const auth = getAuth();
 
   let emailregex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
@@ -66,7 +68,26 @@ const Login = () => {
       setError({password: "pass ny"});
     }else{
       signInWithEmailAndPassword(auth, formData.email, formData.password).then((userCredential)=>{
-          console.log(userCredential);
+          // console.log(userCredential);
+          if(userCredential.user.emailVerified){
+              navigate("/home")
+              console.log(userCredential.user);
+          }else{
+            signOut(auth).then(()=>{
+              toast.error('Please Verify your email', {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                });
+              // console.log("please verify your email")
+              // console.log("logout done")
+          })
+          }
       }).catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
@@ -115,6 +136,18 @@ const Login = () => {
 
   return (
     <>
+    <ToastContainer
+position="top-right"
+autoClose={5000}
+hideProgressBar={false}
+newestOnTop={false}
+closeOnClick
+rtl={false}
+pauseOnFocusLoss
+draggable
+pauseOnHover
+theme="dark"
+/>
         <Modal
           open={open}
           onClose={handleClose}

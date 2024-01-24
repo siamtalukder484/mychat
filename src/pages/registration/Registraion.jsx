@@ -1,6 +1,6 @@
 import { Box, Grid } from '@mui/material'
 import Alert from '@mui/material/Alert'
-import { createUserWithEmailAndPassword, getAuth,sendEmailVerification } from "firebase/auth"
+import { createUserWithEmailAndPassword, getAuth,sendEmailVerification,updateProfile  } from "firebase/auth"
 import React, { useState } from 'react'
 import { Audio, ColorRing } from 'react-loader-spinner'
 import { useNavigate } from "react-router-dom"
@@ -8,8 +8,10 @@ import AuthNavigate from '../../components/AuthNavigate'
 import CustomButton from '../../components/CustomButton'
 import Input from '../../components/Input'
 import SectionHeading from '../../components/SectionHeading'
+import { getDatabase, ref, set } from "firebase/database";
 
 const Registraion = () => {
+  const db = getDatabase();
   const auth = getAuth();
   const navigate = useNavigate();
   const [loader, setLoader] = useState(false)
@@ -57,12 +59,21 @@ const Registraion = () => {
       })
 
       createUserWithEmailAndPassword(auth, signupData.email, signupData.password).then((userCredential)=>{
-        let myemail = userCredential.user.email
-        sendEmailVerification(auth.myemail).then(()=>{
-          console.log("email send hoice");
+        sendEmailVerification(auth.currentUser).then(()=>{
+          updateProfile(auth.currentUser,{
+            displayName: signupData.fullname,
+            photoURL: "https://cdn-icons-png.flaticon.com/512/6596/6596121.png"
+          }).then(()=>{
+            set(ref(db, 'users/' + userCredential.user.uid), {
+              username: userCredential.user.displayName,
+              email: userCredential.user.email,
+              profileimg : userCredential.user.photoURL
+            }).then(()=>{
+              navigate("/")
+              console.log(userCredential);
+            })
+          })
         })
-        // console.log(userCredential);
-        navigate("/")
       }).catch((error)=>{
         const errorCode = error.code;
         const errorMessage = error.message;
