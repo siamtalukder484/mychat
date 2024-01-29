@@ -187,7 +187,7 @@ theme="dark"
                       </div>
                       <div>
                         <Input onChange={handleLoginForm} name="password" type={passShow ? "text" : "password"} variant="standard" labeltext="Password" style="login_input_field"/>
-                        <button onClick={()=>setPassShow(!passShow)}>Show</button>
+                        <button className='passtoggle' onClick={()=>setPassShow(!passShow)}>Show</button>
                         {error.password &&
                           <Alert severity="error">{error.password}</Alert>
                         }

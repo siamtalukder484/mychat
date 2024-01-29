@@ -92,3 +92,11 @@
     padding: 8px 15px;
     margin-top: 8px;
 }
+
+.passtoggel{
+    border: none;
+    padding: 5px 12px;
+    background-color: blueviolet;
+    color: white;
+    cursor: pointer;
+}
