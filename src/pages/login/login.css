@@ -4,6 +4,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    background: red;
 }
 .loginbox__inner{
     width: 378px;
