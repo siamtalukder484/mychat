@@ -1,21 +1,38 @@
-import React from 'react'
-import { IoHomeOutline } from "react-icons/io5";
-import { Link, NavLink } from 'react-router-dom';
+import { getAuth, signOut } from "firebase/auth";
+import React, { useEffect } from 'react';
 import { AiOutlineMessage } from "react-icons/ai";
-import { IoIosNotificationsOutline } from "react-icons/io";
 import { CiSettings } from "react-icons/ci";
+import { IoIosNotificationsOutline } from "react-icons/io";
+import { IoHomeOutline } from "react-icons/io5";
+import { NavLink } from 'react-router-dom';
 import Image from '../../utilities/Image';
-import { getAuth, signInWithEmailAndPassword, signOut  } from "firebase/auth";
 // import { toast } from 'react-toastify';
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 // import { getAuth } from "firebase/auth";
+import { useSelector, useDispatch } from 'react-redux'
+import { loginuser } from "../../slices/userSlice";
 
 const Sidebar = () => {
+    const data = useSelector((state) => state.loginuserdata.value)
     const navigate = useNavigate();
     const auth = getAuth();
+    const dispatch = useDispatch()
+
+    useEffect(()=>{
+        if(!data){
+            navigate("/")
+        }
+        else{
+            navigate("/home")
+        }
+    },[])
+
+
     let handleLogout = () => {
         signOut(auth).then(()=>{
+            localStorage.removeItem("user")
+            dispatch(loginuser(null))
             navigate("/")
             toast.success('Logout Done', {
                 position: "top-right",
@@ -31,7 +48,8 @@ const Sidebar = () => {
     }
 
     const userinfo = auth.currentUser;
-    console.log(userinfo.displayName);
+    // console.log(userinfo.displayName);
+
   return (
     <>
             <ToastContainer
@@ -49,9 +67,10 @@ const Sidebar = () => {
         <div className='sidebarBox'>
             <div>
                 <div className='img_box'>
-                    <Image source={userinfo && userinfo.photoURL} alt="img"/>
+                    <Image source={data && data.photoURL} alt="img"/>
                 </div>
-                <h3 className='username'>{userinfo && userinfo.displayName}</h3>
+                <h3 className='username'>{data && data.displayName}</h3>
+                <p>{data && data.email}</p>
             </div>
             <div>
                 <ul className='navigation'>

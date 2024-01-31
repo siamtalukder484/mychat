@@ -1,8 +1,10 @@
 import { Alert, Modal } from '@mui/material';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import { getAuth, signInWithEmailAndPassword, signOut  } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import React, { useState } from 'react';
+import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from 'react-toastify';
 import GoogleSvg from '../../../public/google.svg';
 import LoginImg from '../../assets/images/hero.jpg';
 import AuthNavigate from '../../components/AuthNavigate';
@@ -11,8 +13,8 @@ import Input from '../../components/Input';
 import SectionHeading from '../../components/SectionHeading';
 import Image from '../../utilities/Image';
 import "./login.css";
-import { useNavigate } from "react-router-dom"
-import { ToastContainer, toast } from 'react-toastify';
+import { useSelector, useDispatch } from 'react-redux'
+import { loginuser } from '../../slices/userSlice';
 
 const style = {
   position: 'absolute',
@@ -29,6 +31,7 @@ const style = {
 const Login = () => {
   const navigate = useNavigate();
   const auth = getAuth();
+  const dispatch = useDispatch()
 
   let emailregex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   let [passShow, setPassShow] = useState(false)
@@ -70,6 +73,8 @@ const Login = () => {
       signInWithEmailAndPassword(auth, formData.email, formData.password).then((userCredential)=>{
           // console.log(userCredential);
           if(userCredential.user.emailVerified){
+              localStorage.setItem("user", JSON.stringify(userCredential.user))
+              dispatch(loginuser(userCredential.user))
               navigate("/home")
               console.log(userCredential.user);
           }else{
