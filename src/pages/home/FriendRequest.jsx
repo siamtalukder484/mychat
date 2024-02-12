@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from 'react'
-import GroupCard from '../../components/home/GroupCard'
-import Image from '../../utilities/Image'
-import { useSelector, useDispatch } from 'react-redux'
-import { getDatabase, ref, onValue, set,push,remove } from "firebase/database";
+import { getDatabase, onValue, push, ref, remove, set } from "firebase/database";
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { ToastContainer, toast } from 'react-toastify';
+import GroupCard from '../../components/home/GroupCard';
+import Image from '../../utilities/Image';
 
 const FriendRequest = () => {
 
   const db = getDatabase();
   const data = useSelector((state) => state.loginuserdata.value)
+  console.log(data);
   const [fRequest, setfRequest] = useState()
 
 
@@ -27,11 +28,26 @@ const FriendRequest = () => {
   },[])
   
  let handleCancelFRequest = (cancelinfo) => {
-    console.log(cancelinfo);
     remove(ref(db, "friendrequest/" + cancelinfo.id)).then(()=>{
       toast("Request Cancel..")
     })
-    
+ }
+
+ let handleAcceptFRequest = (acceptinfo) => {
+  console.log(acceptinfo);
+  set(push(ref(db, "friends")),{
+    whosendname: acceptinfo.sendername,
+    whosendid: acceptinfo.senderid,
+    whosendemail: acceptinfo.senderemail,
+    whosendphoto: acceptinfo.senderimg,
+    whoreceivename: data.displayName,
+    whoreceiveid: data.uid,
+    whoreceiveemail: data.email,
+    whoreceivephoto: data.photoURL
+  }).then(()=>{
+    remove(ref(db, "friendrequest/" + acceptinfo.id))
+    toast("Request accepted Successfully..")
+  })
  }
 
   return (
@@ -51,7 +67,7 @@ const FriendRequest = () => {
                         <p>MERN Developer</p>
                     </div>
                     <div className='buttongroup'>
-                      <button className='addbutton'>
+                      <button onClick={()=>handleAcceptFRequest(item)} className='addbutton'>
                         accept
                       </button>
                       <button onClick={()=>handleCancelFRequest(item)} className='addbutton'>

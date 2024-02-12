@@ -1,54 +1,87 @@
-.sidebarBox{
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    background-color: #5F35F5;
-    align-items: center;
-    padding: 50px 0;
-    height: 100vh;
+.sidebarBox {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: #5f35f5;
+  align-items: center;
+  padding: 50px 0;
+  height: 100vh;
 }
-.img_box{
-    width: 100px;
-    height: 100px;
-    background-color: red;
-    border-radius: 50%;
+.img_box {
+  width: 100px;
+  height: 100px;
+  background-color: red;
+  border-radius: 50%;
+  position: relative;
+  overflow: hidden;
 }
-.img_box img{
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+.img_box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
-.logout{
-    padding: 15px 50px;
-    background-color: white;
-    color: #5F35F5;
-    font-size: 22px;
-    border: 0;
-    border-radius: 10px;
-    cursor: pointer;
+.img_box .overlay {
+  position: absolute;
+  bottom: -100%;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.639);
+  transition: all linear 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
-.navigation{
-    display: flex;
-    flex-direction: column;
-    row-gap: 20px;
+.img_box .overlay svg {
+  color: #fff;
+  font-size: 30px;
 }
-.navigation li a{
-    color: #fff;
-    padding: 15px 65px;
-    display: inline-block;
-    border-radius: 20px;
+.img_box:hover .overlay {
+  bottom: 0;
 }
-.navigation li a svg{
-    font-size: 50px;
+.img_holder {
+  width: 80px;
+  height: 80px;
+  overflow: hidden;
+  border-radius: 50%;
+  margin: 0 auto;
 }
-.navigation li a.active{
-    background-color: #fff;
-    color: #5F35F5;
-
+.img_holder img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
-.username{
-    color: #fff;
-    text-align: center;
-    font-size: 25px;
-    margin-top: 20px;
+.logout {
+  padding: 15px 50px;
+  background-color: white;
+  color: #5f35f5;
+  font-size: 22px;
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.navigation {
+  display: flex;
+  flex-direction: column;
+  row-gap: 20px;
+}
+.navigation li a {
+  color: #fff;
+  padding: 15px 65px;
+  display: inline-block;
+  border-radius: 20px;
+}
+.navigation li a svg {
+  font-size: 50px;
+}
+.navigation li a.active {
+  background-color: #fff;
+  color: #5f35f5;
+}
+.username {
+  color: #fff;
+  text-align: center;
+  font-size: 25px;
+  margin-top: 20px;
 }
