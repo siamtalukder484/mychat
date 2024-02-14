@@ -14,7 +14,7 @@ const Friends = () => {
     onValue(friendRef, (snapshot) => {
       let arr = []
       snapshot.forEach((item)=>{
-          if(data.uid == item.val().whoreceiveid){
+          if(data.uid == item.val().whoreceiveid || data.uid == item.val().whosendid){
             arr.push({...item.val(),id:item.key})
           }
       })
@@ -28,14 +28,19 @@ const Friends = () => {
     <>
         <GroupCard cardtitle="Friend">
           <div className='usermainbox'>
-            {friendList && friendList.map((item,index)=>(
+            {friendList && friendList.length > 0 ? friendList.map((item,index)=>(
                 <div key={index} className='useritem'>
                     <div className='userimgbox'>
                       <Image source={item.whosendphoto} alt="img"/>
                     </div>
                     <div className='userinfobox'>
                     <div>
-                        <h3>{item.whosendname}</h3>
+                        {data.uid == item.whosendid 
+                          ?
+                          <h3>{item.whoreceivename}</h3>
+                          :
+                          <h3>{item.whosendname}</h3>
+                        }
                         <p>MERN Developer</p>
                     </div>
                     <button className='addbutton'>
@@ -44,6 +49,8 @@ const Friends = () => {
                     </div>
                 </div>
             ))
+            :
+            <h1>no friend available..</h1>
             }
           </div>
       </GroupCard>
