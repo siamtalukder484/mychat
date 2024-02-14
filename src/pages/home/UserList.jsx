@@ -1,17 +1,18 @@
-import React, { useEffect, useState } from 'react'
-import GroupCard from '../../components/home/GroupCard'
-import { TiPlus } from 'react-icons/ti'
-import Image from '../../utilities/Image'
-import { getDatabase, ref, onValue, set,push } from "firebase/database";
-import { useSelector, useDispatch } from 'react-redux'
+import { getDatabase, onValue, push, ref, set } from "firebase/database";
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { ToastContainer, toast } from 'react-toastify';
+import GroupCard from '../../components/home/GroupCard';
+import Image from '../../utilities/Image';
 
 const UserList = () => {
   const [userList, setUserList] = useState()
   const db = getDatabase();
   const data = useSelector((state) => state.loginuserdata.value)
-  
+  const [fRequest, setfRequest] = useState(undefined)
 
+
+  // all users data
   useEffect(()=>{
     const userRef = ref(db, 'users');
     onValue(userRef, (snapshot) => {
@@ -24,7 +25,9 @@ const UserList = () => {
       setUserList(arr)
     });
   },[])
+  // console.log(userList);
 
+  //add friend operation
   let handleFRequest = (frequestinfo) => {
     set(push(ref(db, "friendrequest")),{
       senderid: data.uid,
@@ -40,6 +43,25 @@ const UserList = () => {
     })
   }
 
+
+  //friend request data
+  useEffect(()=>{
+    const fRequestRef = ref(db, 'friendrequest');
+    onValue(fRequestRef, (snapshot) => {
+      let arr = []
+      snapshot.forEach((item)=>{
+        if(data.uid == item.val().senderid){
+          arr.push(item.val().senderid + item.val().receiverid)
+        }
+      })
+      setfRequest(arr)
+    });
+  },[])
+
+
+  let handleCancle = (i) => {
+    console.log(i.id);
+  }
 
   return (
     <>
@@ -58,9 +80,15 @@ const UserList = () => {
                         <h3>{item.username}</h3>
                         <p>MERN Developer</p>
                     </div>
-                    <button onClick={()=>handleFRequest(item)} className='addbutton'>
-                      <TiPlus />
-                    </button>
+                    {fRequest &&
+                      fRequest.includes(item.id + data.uid) || fRequest.includes(data.uid + item.id)
+                      ?
+                      <button onClick={()=>handleCancle(item)} className='addbutton'>cancel</button>
+                      :
+                      <button onClick={()=>handleFRequest(item)} className='addbutton'>
+                        add
+                      </button>
+                      }
                   </div>
               </div>
             ))

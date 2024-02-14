@@ -38,6 +38,38 @@ const Sidebar = () => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+
+  // const defaultSrc =
+  // "https://raw.githubusercontent.com/roadmanfong/react-cropper/master/example/img/child.jpg";
+  // const [image, setImage] = useState();
+  // const [cropData, setCropData] = useState("#");
+
+
+  // const onChange = (e) => {
+  //   e.preventDefault();
+  //   let files;
+  //   if (e.dataTransfer) {
+  //     files = e.dataTransfer.files;
+  //   } else if (e.target) {
+  //     files = e.target.files;
+  //   }
+  //   const reader = new FileReader();
+  //   reader.onload = () => {
+  //     setImage(reader.result);
+  //   };
+  //   reader.readAsDataURL(files[0]);
+  // };
+
+  // const getCropData = () => {
+  //   if (typeof cropperRef.current?.cropper !== "undefined") {
+  //     setCropData(cropperRef.current?.cropper.getCroppedCanvas().toDataURL());
+  //   }
+  // };
+
+  // let handleImage = (e) => {
+  //   console.log(e);
+  // }
+
   useEffect(() => {
     if (!data) {
       navigate("/");
@@ -65,7 +97,7 @@ const Sidebar = () => {
   };
 
   const userinfo = auth.currentUser;
-  // console.log(userinfo.displayName);
+  
 
   return (
     <>

@@ -22,7 +22,7 @@ const Friends = () => {
     });
   },[])
 
-  console.log(friendList);
+  // console.log(friendList);
 
   return (
     <>
@@ -31,7 +31,7 @@ const Friends = () => {
             {friendList && friendList.length > 0 ? friendList.map((item,index)=>(
                 <div key={index} className='useritem'>
                     <div className='userimgbox'>
-                      <Image source={item.whosendphoto} alt="img"/>
+                      <Image source={data.uid == item.whosendid ? item.whoreceivephoto : item.whosendphoto} alt="img"/>
                     </div>
                     <div className='userinfobox'>
                     <div>

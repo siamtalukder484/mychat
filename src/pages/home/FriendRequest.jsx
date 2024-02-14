@@ -9,7 +9,6 @@ const FriendRequest = () => {
 
   const db = getDatabase();
   const data = useSelector((state) => state.loginuserdata.value)
-  console.log(data);
   const [fRequest, setfRequest] = useState()
 
 
@@ -18,7 +17,6 @@ const FriendRequest = () => {
     onValue(fRequestRef, (snapshot) => {
       let arr = []
       snapshot.forEach((item)=>{
-        console.log(item.val());
         if(data.uid == item.val().receiverid){
           arr.push({...item.val(),id:item.key})
         }
