@@ -9,7 +9,8 @@ const UserList = () => {
   const [userList, setUserList] = useState()
   const db = getDatabase();
   const data = useSelector((state) => state.loginuserdata.value)
-  const [fRequest, setfRequest] = useState(undefined)
+  const [fRequest, setfRequest] = useState([])
+  const [friendList, setfriendList] = useState([])
 
 
   // all users data
@@ -29,7 +30,7 @@ const UserList = () => {
 
   //add friend operation
   let handleFRequest = (frequestinfo) => {
-    set(push(ref(db, "friendrequest")),{
+    set(push(ref(db, "friendrequest/" +frequestinfo.id)),{
       senderid: data.uid,
       sendername: data.displayName,
       senderimg: data.photoURL,
@@ -50,11 +51,25 @@ const UserList = () => {
     onValue(fRequestRef, (snapshot) => {
       let arr = []
       snapshot.forEach((item)=>{
-        if(data.uid == item.val().senderid){
-          arr.push(item.val().senderid + item.val().receiverid)
+        if(item.val().senderid == data.uid){
+          arr.push(item.val().receiverid + item.val().senderid)
         }
       })
       setfRequest(arr)
+    });
+  },[])
+
+  //friend data
+  useEffect(()=>{
+    const friendsRef = ref(db, 'friends');
+    onValue(friendsRef, (snapshot) => {
+      let arr = []
+      snapshot.forEach((item)=>{
+        if(item.val().whoreceiveid == data.uid || item.val().whosendid == data.uid){
+          arr.push(item.val().whoreceiveid + item.val().whosendid)
+        }
+      })
+      setfriendList(arr)
     });
   },[])
 
@@ -80,14 +95,20 @@ const UserList = () => {
                         <h3>{item.username}</h3>
                         <p>MERN Developer</p>
                     </div>
-                    {fRequest &&
+                    {
                       fRequest.includes(item.id + data.uid) || fRequest.includes(data.uid + item.id)
-                      ?
-                      <button onClick={()=>handleCancle(item)} className='addbutton'>cancel</button>
+                      ?<>
+                        <button className='addbutton'>pending</button>
+                        <button onClick={()=>handleCancle(item)} className='addbutton'>cancel</button>
+                      </>
                       :
-                      <button onClick={()=>handleFRequest(item)} className='addbutton'>
-                        add
-                      </button>
+                      friendList.includes(item.id + data.uid) || friendList.includes(data.uid + item.id)
+                        ?
+                        <button className='addbutton'>friend</button>
+                        :
+                        <button onClick={()=>handleFRequest(item)} className='addbutton'>
+                          add
+                        </button>
                       }
                   </div>
               </div>

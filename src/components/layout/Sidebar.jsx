@@ -1,12 +1,12 @@
 import { getAuth, signOut } from "firebase/auth";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { AiOutlineMessage } from "react-icons/ai";
 import { CiSettings } from "react-icons/ci";
 import { IoIosNotificationsOutline } from "react-icons/io";
 import { IoHomeOutline } from "react-icons/io5";
 import { NavLink } from "react-router-dom";
 import Image from "../../utilities/Image";
-// import { toast } from 'react-toastify';
+import { getStorage, ref, uploadString,getDownloadURL } from "firebase/storage";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 // import { getAuth } from "firebase/auth";
@@ -15,6 +15,8 @@ import Modal from "@mui/material/Modal";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { loginuser } from "../../slices/userSlice";
+import Cropper from "react-cropper";
+import "cropperjs/dist/cropper.css";
 
 const style = {
   position: "absolute",
@@ -38,37 +40,59 @@ const Sidebar = () => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  // ===== Crop Image Start =====
+  const [image, setImage] = useState();
+  const [profile, setProfile] = useState("");
+  const [cropData, setCropData] = useState("#");
+  const [cropper, setCropper] = useState();
 
-  // const defaultSrc =
-  // "https://raw.githubusercontent.com/roadmanfong/react-cropper/master/example/img/child.jpg";
-  // const [image, setImage] = useState();
-  // const [cropData, setCropData] = useState("#");
+  const onChange = (e) => {
+    e.preventDefault();
+    let files;
+    if (e.dataTransfer) {
+      files = e.dataTransfer.files;
+    } else if (e.target) {
+      files = e.target.files;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      setImage(reader.result);
+    };
+    reader.readAsDataURL(files[0]);
+  };
 
+  const getCropData = () => {
+      
+    if (typeof cropper !== "undefined") {
+      setCropData(cropper.getCroppedCanvas().toDataURL());
+      const storage = getStorage();
+      const storageRef = ref(storage, `profile_photo/${data.uid}`);
+      const message4 = cropper.getCroppedCanvas().toDataURL();
+        uploadString(storageRef, message4, 'data_url').then((snapshot) => {
+            // console.log('Uploaded a data_url string!');
+            setOpen(false)
+            setImage("")
+            getDownloadURL(storageRef).then((downloadURL) => {
+              updateProfile(auth.currentUser, {
+                photoURL: downloadURL,
+              }).then(()=>{
+                toast("Profile Picture Upload Successfully..");
+                dispatch(activeUser(auth.currentUser))
+                localStorage.setItem("userInfo",JSON.stringify(auth.currentUser))
 
-  // const onChange = (e) => {
-  //   e.preventDefault();
-  //   let files;
-  //   if (e.dataTransfer) {
-  //     files = e.dataTransfer.files;
-  //   } else if (e.target) {
-  //     files = e.target.files;
-  //   }
-  //   const reader = new FileReader();
-  //   reader.onload = () => {
-  //     setImage(reader.result);
-  //   };
-  //   reader.readAsDataURL(files[0]);
-  // };
+                // update(ref(db, 'users/'+ data.userData.userInfo.uid),{
+                //   profilephoto: downloadURL
+                // });
 
-  // const getCropData = () => {
-  //   if (typeof cropperRef.current?.cropper !== "undefined") {
-  //     setCropData(cropperRef.current?.cropper.getCroppedCanvas().toDataURL());
-  //   }
-  // };
-
-  // let handleImage = (e) => {
-  //   console.log(e);
-  // }
+              })
+            });
+            
+      }).then(()=>{
+      
+      });       
+    }
+  };
+  // ===== Crop Image End =====
 
   useEffect(() => {
     if (!data) {
@@ -112,7 +136,32 @@ const Sidebar = () => {
           <div className="img_holder">
             <Image source={data && data.photoURL} alt="img" />
           </div>
-          <input type="file" />
+          <div>
+            <input style={{textAlign:"center"}} onChange={onChange} type='file'/>
+              {image &&
+                <>
+                <Cropper
+                  style={{ height: 400, width: "100%" }}
+                  zoomTo={0.5}
+                  initialAspectRatio={1}
+                  preview=".img-preview"
+                  src={image}
+                  viewMode={1}
+                  minCropBoxHeight={10}
+                  minCropBoxWidth={10}
+                  background={false}
+                  responsive={true}
+                  autoCropArea={1}
+                  checkOrientation={false} // https://github.com/fengyuanchen/cropperjs/issues/671
+                  onInitialized={(instance) => {
+                    setCropper(instance);
+                  }}
+                  guides={true}
+                />
+                <button className='cropper_btn' onClick={getCropData}>Upload</button>
+                </>
+              }
+          </div>
         </Box>
       </Modal>
       <ToastContainer
