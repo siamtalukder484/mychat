@@ -1,4 +1,4 @@
-import { getAuth, signOut } from "firebase/auth";
+import { getAuth, signOut,updateProfile } from "firebase/auth";
 import React, { useEffect, useState } from "react";
 import { AiOutlineMessage } from "react-icons/ai";
 import { CiSettings } from "react-icons/ci";
@@ -9,7 +9,7 @@ import Image from "../../utilities/Image";
 import { getStorage, ref, uploadString,getDownloadURL } from "firebase/storage";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
-// import { getAuth } from "firebase/auth";
+// import { getAuth,updateProfile  } from "firebase/auth";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import { FaCloudUploadAlt } from "react-icons/fa";
@@ -17,6 +17,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { loginuser } from "../../slices/userSlice";
 import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
+import { hexToRgb } from "@mui/material";
+import { height } from "@mui/system";
 
 const style = {
   position: "absolute",
@@ -31,68 +33,58 @@ const style = {
 };
 
 const Sidebar = () => {
-  const data = useSelector((state) => state.loginuserdata.value);
   const navigate = useNavigate();
   const auth = getAuth();
   const dispatch = useDispatch();
+  const data = useSelector((state) => state.loginuserdata.value);
 
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  // ===== Crop Image Start =====
-  const [image, setImage] = useState();
-  const [profile, setProfile] = useState("");
-  const [cropData, setCropData] = useState("#");
-  const [cropper, setCropper] = useState();
-
-  const onChange = (e) => {
-    e.preventDefault();
-    let files;
-    if (e.dataTransfer) {
-      files = e.dataTransfer.files;
-    } else if (e.target) {
-      files = e.target.files;
-    }
-    const reader = new FileReader();
-    reader.onload = () => {
-      setImage(reader.result);
-    };
-    reader.readAsDataURL(files[0]);
-  };
-
-  const getCropData = () => {
-      
-    if (typeof cropper !== "undefined") {
-      setCropData(cropper.getCroppedCanvas().toDataURL());
-      const storage = getStorage();
-      const storageRef = ref(storage, `profile_photo/${data.uid}`);
-      const message4 = cropper.getCroppedCanvas().toDataURL();
-        uploadString(storageRef, message4, 'data_url').then((snapshot) => {
-            // console.log('Uploaded a data_url string!');
-            setOpen(false)
-            setImage("")
-            getDownloadURL(storageRef).then((downloadURL) => {
-              updateProfile(auth.currentUser, {
-                photoURL: downloadURL,
-              }).then(()=>{
-                toast("Profile Picture Upload Successfully..");
-                dispatch(activeUser(auth.currentUser))
-                localStorage.setItem("userInfo",JSON.stringify(auth.currentUser))
-
-                // update(ref(db, 'users/'+ data.userData.userInfo.uid),{
-                //   profilephoto: downloadURL
-                // });
-
-              })
-            });
-            
-      }).then(()=>{
-      
-      });       
-    }
-  };
-  // ===== Crop Image End =====
+      // ===== Crop Image Start =====
+      const [image, setImage] = useState();
+      const [profile, setProfile] = useState("");
+      const [cropData, setCropData] = useState("#");
+      const [cropper, setCropper] = useState();
+  
+      const onChange = (e) => {
+        e.preventDefault();
+        let files;
+        if (e.dataTransfer) {
+          files = e.dataTransfer.files;
+        } else if (e.target) {
+          files = e.target.files;
+        }
+        const reader = new FileReader();
+        reader.onload = () => {
+          setImage(reader.result);
+        };
+        reader.readAsDataURL(files[0]);
+      };
+  
+      const getCropData = () => {
+        if (typeof cropper !== "undefined") {
+          setCropData(cropper.getCroppedCanvas().toDataURL());
+          const storage = getStorage();
+          const storageRef = ref(storage, `profile_photo/${data.uid}`);
+          const message4 = cropper.getCroppedCanvas().toDataURL();
+            uploadString(storageRef, message4, 'data_url').then((snapshot) => {
+                // console.log('Uploaded a data_url string!');
+                setOpen(false)
+                setImage("")
+                getDownloadURL(storageRef).then((downloadURL) => {
+                  updateProfile(auth.currentUser, {
+                    photoURL: downloadURL,
+                  }).then(()=>{
+                    dispatch(loginuser(auth.currentUser))
+                    localStorage.setItem("user",JSON.stringify(auth.currentUser))
+                  })
+                });
+          });       
+        }
+      };
+      // ===== Crop Image End =====
 
   useEffect(() => {
     if (!data) {
@@ -134,7 +126,21 @@ const Sidebar = () => {
         <Box sx={style}>
           <h2>Upload Profile Photo</h2>
           <div className="img_holder">
-            <Image source={data && data.photoURL} alt="img" />
+            {/* <Image source={data && data.photoURL} alt="img" /> */}
+            {image ? (
+              <div className='img-preview'></div>
+            ) : 
+              data ? (
+                  data.photoURL
+                  ?
+                  <Image source={data && data.photoURL} style='profile_img'/>
+                  :
+                  <Image source={data && data.photoURL} style='profile_img'/>
+                ) : (
+                  <Image source={data && data.photoURL} style='profile_img'/>
+                  
+              )
+            }
           </div>
           <div>
             <input style={{textAlign:"center"}} onChange={onChange} type='file'/>
@@ -179,7 +185,17 @@ const Sidebar = () => {
       <div className="sidebarBox">
         <div>
           <div className="img_box">
-            <Image source={data && data.photoURL} alt="img" />
+              {data 
+                ? 
+                  data.photoURL
+                  ?
+                  <Image source={data.photoURL} style='profile_img'/>
+                  :
+                  <Image source="assets/images/profile_avatar.png" style='profile_img'/>
+                :
+                <Image source="assets/images/profile_avatar.png" style='profile_img'/>
+                }
+            {/* <Image source={auth.currentUser && auth.currentUser.photoURL} alt="img" /> */}
             <div onClick={handleOpen} className="overlay">
               <FaCloudUploadAlt />
             </div>
