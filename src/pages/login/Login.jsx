@@ -76,7 +76,7 @@ const Login = () => {
               localStorage.setItem("user", JSON.stringify(userCredential.user))
               dispatch(loginuser(userCredential.user))
               navigate("/home")
-              console.log(userCredential.user);
+              // console.log(userCredential.user);
           }else{
             signOut(auth).then(()=>{
               toast.error('Please Verify your email', {

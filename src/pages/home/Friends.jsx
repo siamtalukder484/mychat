@@ -1,4 +1,4 @@
-import { getDatabase, onValue, ref } from "firebase/database";
+import { getDatabase, onValue, push, ref, remove, set } from "firebase/database";
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import GroupCard from '../../components/home/GroupCard';
@@ -22,7 +22,23 @@ const Friends = () => {
     });
   },[])
 
-  // console.log(friendList);
+  //block operation
+let handleBlock = (blockinfo) => {
+  console.log(blockinfo);
+  set(push(ref(db, "block")),{
+    whoblockid: data.uid,
+    whoblockname: data.displayName,
+    whoblockemail: data.email,
+    whoblockimg: data.photoURL,
+    blockid: blockinfo.whoreceiveid,
+    blockemail: blockinfo.whoreceiveemail,
+    blockname: blockinfo.whoreceivename,
+    blockimg: blockinfo.whoreceivephoto,
+  }).then(()=>{
+    remove(ref(db, "friends/"+blockinfo.id))
+  })
+}
+
 
   return (
     <>
@@ -43,7 +59,7 @@ const Friends = () => {
                         }
                         <p>MERN Developer</p>
                     </div>
-                    <button className='addbutton'>
+                    <button onClick={()=>handleBlock(item)} className='addbutton'>
                         Block
                     </button>
                     </div>

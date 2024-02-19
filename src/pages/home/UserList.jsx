@@ -1,4 +1,4 @@
-import { getDatabase, onValue, push, ref, set } from "firebase/database";
+import { getDatabase, onValue, push, ref, remove, set } from "firebase/database";
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ToastContainer, toast } from 'react-toastify';
@@ -30,7 +30,7 @@ const UserList = () => {
 
   //add friend operation
   let handleFRequest = (frequestinfo) => {
-    set(push(ref(db, "friendrequest/" +frequestinfo.id)),{
+    set(ref(db, "friendrequest/" + frequestinfo.id),{
       senderid: data.uid,
       sendername: data.displayName,
       senderimg: data.photoURL,
@@ -40,7 +40,7 @@ const UserList = () => {
       receiveremail: frequestinfo.email,
       receiverimg: frequestinfo.profileimg
     }).then(()=>{
-      toast("Friend Request Send Successfully..")
+      // toast("Friend Request Send Successfully..")
     })
   }
 
@@ -75,8 +75,13 @@ const UserList = () => {
 
 
   let handleCancle = (i) => {
-    console.log(i.id);
+    // console.log(i.id);
+    remove(ref(db, "friendrequest/" + i.id)).then(()=>{
+      // toast("Request Cancel..")
+    })
   }
+
+  console.log(fRequest);
 
   return (
     <>
@@ -96,7 +101,7 @@ const UserList = () => {
                         <p>MERN Developer</p>
                     </div>
                     {
-                      fRequest.includes(item.id + data.uid) || fRequest.includes(data.uid + item.id)
+                      fRequest.length > 0 && fRequest.includes(item.id + data.uid) || fRequest.includes(data.uid + item.id)
                       ?<>
                         <button className='addbutton'>pending</button>
                         <button onClick={()=>handleCancle(item)} className='addbutton'>cancel</button>
