@@ -11,6 +11,7 @@ const UserList = () => {
   const data = useSelector((state) => state.loginuserdata.value)
   const [fRequest, setfRequest] = useState([])
   const [friendList, setfriendList] = useState([])
+  const [requestCheck, setRequestCheck] = useState([])
 
 
   // all users data
@@ -50,14 +51,22 @@ const UserList = () => {
     const fRequestRef = ref(db, 'friendrequest');
     onValue(fRequestRef, (snapshot) => {
       let arr = []
+      let requestArr = []
       snapshot.forEach((item)=>{
+        if(item.val().receiverid == data.uid){
+          requestArr.push(item.val().senderid + item.val().receiverid)
+        }
         if(item.val().senderid == data.uid){
           arr.push(item.val().receiverid + item.val().senderid)
         }
       })
       setfRequest(arr)
+      setRequestCheck(requestArr)
     });
   },[])
+
+  // console.log(fRequest);
+  console.log(requestCheck);
 
   //friend data
   useEffect(()=>{
@@ -81,7 +90,6 @@ const UserList = () => {
     })
   }
 
-  console.log(fRequest);
 
   return (
     <>
@@ -110,6 +118,11 @@ const UserList = () => {
                       friendList.includes(item.id + data.uid) || friendList.includes(data.uid + item.id)
                         ?
                         <button className='addbutton'>friend</button>
+                        :
+                          requestCheck.includes(item.id + data.uid)
+                          ?
+                          <button className='addbutton'>confirm koro</button>
+                       
                         :
                         <button onClick={()=>handleFRequest(item)} className='addbutton'>
                           add

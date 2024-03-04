@@ -24,7 +24,6 @@ const BlockList = () => {
     });
   },[])
 
-  console.log(blockList);
 
 
   return (
