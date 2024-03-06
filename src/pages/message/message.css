@@ -79,8 +79,27 @@
     margin-top: 15px;
 }
 .msg_footer{
-    background-color: aquamarine;
+    background-color: blueviolet;
     width: 100%;
     height: 80px;
+    padding: 10px 20px;
+}
+.msg_input{
+    width: 60%;
+    height: 100%;
+    border-radius: 8px;
+    outline: none;
+    border: none;
+    padding: 0 20px;
+    font-size: 20px;
+}
+.msg_send_btn{
+    height: 100%;
     padding: 0 30px;
+    background-color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+    color: black;
+    font-size: 20px;
+    margin-left: 20px;
 }
