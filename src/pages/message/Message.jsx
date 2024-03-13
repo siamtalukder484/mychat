@@ -15,6 +15,8 @@ const Message = () => {
   const activechat = useSelector((state) => state?.activeuserdata?.value)
   const dispatch = useDispatch()
 
+  console.log(activechat);
+
   //friend read operation
   useEffect(()=>{
     const friendRef = ref(db, 'friends');
@@ -53,9 +55,11 @@ const Message = () => {
     const messageRef = ref(db, 'message');
     onValue(messageRef, (snapshot) => {
       let arr = []
+      let activeuserid = activechat.whosendid == data.uid ? activechat.whoreceiveid : activechat.whosendid
+      console.log(activeuserid);
       snapshot.forEach((item)=>{
-          if(data.uid == item.val().receiverid || data.uid == item.val().senderid){
-            arr.push({...item.val(),id:item.key})
+          if((item.val().senderid == data.uid && item.val().receiverid == activeuserid) || (item.val().receiverid == data.uid && item.val().senderid == activeuserid ) ){
+              arr.push({...item.val(),id:item.key})
           }
       })
       setAllMessage(arr)
@@ -111,7 +115,7 @@ const Message = () => {
           </div>
           <div className='msg_main'>
             {allmessage.map((item,index)=>(
-                <div className="sendmsg">
+                <div key={index} className={`${item.receiverid == data.uid ? "receivemsg" : "sendmsg"}`}>
                   <p>{item.message}</p>
                 </div>
             ))
