@@ -15,6 +15,7 @@
     "@mui/material": "^5.15.2",
     "@mui/styled-engine-sc": "^6.0.0-alpha.10",
     "@reduxjs/toolkit": "^2.1.0",
+    "emoji-picker-react": "^4.9.2",
     "firebase": "^10.7.2",
     "react": "^18.2.0",
     "react-cropper": "^2.3.3",
@@ -23,6 +24,7 @@
     "react-loader-spinner": "^6.1.6",
     "react-redux": "^9.1.0",
     "react-router-dom": "^6.21.1",
+    "react-scroll-to-bottom": "^4.2.0",
     "react-toastify": "^10.0.4",
     "styled-components": "^6.1.6"
   },
