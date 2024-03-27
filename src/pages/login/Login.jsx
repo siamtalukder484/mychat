@@ -1,7 +1,7 @@
 import { Alert, Modal } from '@mui/material';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import { getAuth, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail,GoogleAuthProvider,signInWithPopup, signOut } from "firebase/auth";
 import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
@@ -32,6 +32,33 @@ const Login = () => {
   const navigate = useNavigate();
   const auth = getAuth();
   const dispatch = useDispatch()
+  const provider = new GoogleAuthProvider();
+
+  // let handleGoogleAuth = () => {
+  //   signInWithPopup(auth, provider)
+  //   .then((result) => {
+  //     const credential = GoogleAuthProvider.credentialFromResult(result);
+  //     const token = credential.accessToken;
+  //     const user = result.user;
+  //   }).catch((error) => {
+  //     const errorCode = error.code;
+  //     const errorMessage = error.message;
+  //     const email = error.customData.email;
+  //     const credential = GoogleAuthProvider.credentialFromError(error);
+  //   });
+  // }
+
+  const handleGoogleAuth = async () => {
+    // const provider = new firebase.auth.GoogleAuthProvider();
+    try {
+      const result = await signInWithPopup(auth,provider);
+      // Handle successful sign-in
+      console.log('User signed in:', result.user);
+    } catch (error) {
+      // Handle errors
+      console.error('Sign-in error:', error.message);
+    }
+  };
 
   let emailregex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   let [passShow, setPassShow] = useState(false)
@@ -126,7 +153,6 @@ const Login = () => {
   }
 
   let handleForgetSubmit = () => {
-    console.log(forgetformData);
     if(!forgetformData.forgetemail){
       setforgetError({forgetemail: "forget email ny"});
     }
@@ -134,7 +160,15 @@ const Login = () => {
       setforgetError({forgetemail: "email format thik ny"});
     }else{
       setforgetError({forgetemail: ""})
-      console.log(forgetformData);
+      // console.log(forgetformData.forgetemail);
+      sendPasswordResetEmail(auth, forgetformData.forgetemail)
+        .then(() => {
+          console.log("forget email sent successfully..");
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+        });
     }
   }
 
@@ -179,7 +213,7 @@ theme="dark"
                 <div className='loginbox'>
                   <div className='loginbox__inner'>
                     <SectionHeading style="auth_heading" text="Login to your account!"/>
-                    <div className='provider_login'>
+                    <div onClick={handleGoogleAuth} className='provider_login'>
                         <img src={GoogleSvg}/>
                         <span>Login with Google</span>
                     </div>
